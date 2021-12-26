@@ -16,19 +16,19 @@ RequestHandler::RequestHandler(QObject *parent)
 //    db.setPassword("trewtrew");
 
     // если по переменным среды
-    QString hostName = QString::fromLocal8Bit(qgetenv("database-host"));
+    QString hostName = QString::fromLocal8Bit(qgetenv("POSTGRES_HOST"));
     if (hostName.isEmpty())
         qFatal("host name is empty");
     std::cout << "host name:" << hostName.toStdString() << std::endl;
-    QString dbName = QString::fromLocal8Bit(qgetenv("database-name"));
+    QString dbName = QString::fromLocal8Bit(qgetenv("POSTGRES_DB"));
     if (dbName.isEmpty())
         qFatal("database name is empty");
     std::cout << "dbName:" << dbName.toStdString() << std::endl;
-    QString userName = QString::fromLocal8Bit(qgetenv("postgres-user"));
+    QString userName = QString::fromLocal8Bit(qgetenv("POSTGRES_USER"));
     if (userName.isEmpty())
         qFatal("postgres-user is empty");
     std::cout << "username is: " << userName.toStdString() << std::endl;
-    QString pass = QString::fromLocal8Bit(qgetenv("postgres-password"));
+    QString pass = QString::fromLocal8Bit(qgetenv("POSTGRES_PASSWORD"));
     if (pass.isEmpty())
         qFatal("postgres-password is empty");
     std::cout << "password is: " << pass.toStdString() << std::endl;
@@ -65,6 +65,7 @@ RequestHandler::~RequestHandler()
 void RequestHandler::service(HttpRequest &request, HttpResponse &response)
 {
     QSqlQuery q;
+//    request.getParameter("username");
     if (!q.exec("select * from public.tmp"))
         qFatal("cant get data from table");
     q.next();

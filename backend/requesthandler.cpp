@@ -16,10 +16,22 @@ RequestHandler::RequestHandler(QObject *parent)
 //    db.setPassword("trewtrew");
 
     // если по переменным среды
-    QString hostName = QString::fromLocal8Bit(qgetenv("POSTGRES_HOST"));
-    if (hostName.isEmpty())
-        qFatal("host name is empty");
-    std::cout << "host name:" << hostName.toStdString() << std::endl;
+    QString envGetService = QString::fromLocal8Bit(qgetenv("POSTGRES_HOST"));
+    if (envGetService.isEmpty())
+        qFatal("envGetService is empty");
+    envGetService = envGetService.toUpper();
+    envGetService.replace('-', '_');
+    QString envGetHost = envGetService + "_SERVICE_HOST";
+    QString envGetPort = envGetService + "_SERVICE_PORT";
+    QString host = QString::fromLocal8Bit(qgetenv(envGetHost.toStdString().c_str()));
+    bool ok;
+    int port = QString::fromLocal8Bit(qgetenv(envGetPort.toStdString().c_str())).toInt(&ok);
+    if (!ok) {
+        qFatal("cannot convert port to int");
+    }
+    std::cout << "host: " << host.toStdString() << std::endl;
+    std::cout << "port: " << port << std::endl;
+
     QString dbName = QString::fromLocal8Bit(qgetenv("POSTGRES_DB"));
     if (dbName.isEmpty())
         qFatal("database name is empty");
@@ -32,8 +44,8 @@ RequestHandler::RequestHandler(QObject *parent)
     if (pass.isEmpty())
         qFatal("postgres-password is empty");
     std::cout << "password is: " << pass.toStdString() << std::endl;
-    db.setHostName(hostName);         //это если хост хранится в среде
-    db.setPort(5432);                 //а порт стандартный
+    db.setHostName(host);
+    db.setPort(port);
     db.setDatabaseName(dbName);
     db.setUserName(userName);
     db.setPassword(pass);
